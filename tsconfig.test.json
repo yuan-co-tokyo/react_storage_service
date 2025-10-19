@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"outDir": ".test-dist",
+		"module": "ESNext",
+		"target": "ES2022"
+	},
+	"include": ["src/server/media/storage.ts", "tests/**/*.test.ts"]
+}
