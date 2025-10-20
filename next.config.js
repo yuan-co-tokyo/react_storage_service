@@ -5,6 +5,9 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+  // Docker のスタンドアロン出力を有効化
+  output: "standalone",
+};
 
 export default config;
