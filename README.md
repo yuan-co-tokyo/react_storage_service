@@ -38,19 +38,32 @@ Next.js + tRPC を用いたモバイルフレンドリーなメディアスト�
    npm install
    ```
 
-4. ローカルの PostgreSQL を Docker / Podman で起動します。`.env` の `DATABASE_URL` に設定したポートとデータベース名に基づき、`./start-database.sh` がコンテナを起動します。
+4. Docker Compose を利用する場合は、`config/docker/app.env` を作成し以下の値を設定します。`POSTGRES_PASSWORD` は任意の安全な文字列を使用してください。
 
    ```bash
-   ./start-database.sh
+   mkdir -p config/docker
+   cat <<'EOF' > config/docker/app.env
+   POSTGRES_PASSWORD=<生成したパスワード>
+   DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/react_storage_service
+   AUTH_SECRET=<npx auth secret で生成した値>
+   AUTH_DISCORD_ID=<Discord クライアント ID>
+   AUTH_DISCORD_SECRET=<Discord クライアント Secret>
+   EOF
    ```
 
-   既存コンテナがない場合は自動的に作成され、同名コンテナが存在する場合は起動のみを行います。停止する際は `docker stop <コンテナ名>` もしくは `podman stop <コンテナ名>` を利用してください。
-
-5. スキーマをデータベースに適用します。Drizzle のマイグレーション定義が更新された場合も同コマンドで反映します。
+5. Compose でアプリケーションと PostgreSQL を起動します。
 
    ```bash
-   npm run db:push
+   docker compose up -d
    ```
+
+6. 初期化時やスキーマ更新時は次のコマンドでマイグレーションを適用します。
+
+   ```bash
+   docker compose run --rm app npm run db:push
+   ```
+
+   Compose を利用しない場合は、従来どおり `./start-database.sh` でデータベースを起動し、`npm run db:push` でスキーマを反映できます。
 
 ## 開発サーバーの起動
 

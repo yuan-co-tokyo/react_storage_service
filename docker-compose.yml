@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+    command: ["node", "server.js"]
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - config/docker/app.env
+    ports:
+      - "3000:3000"
+  db:
+    image: postgres:16-alpine
+    env_file:
+      - config/docker/app.env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: react_storage_service
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
